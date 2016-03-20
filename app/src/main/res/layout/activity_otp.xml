@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="56dp"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:paddingRight="24dp"
+        android:weightSum="1">
 
 
         <TextView
@@ -31,13 +32,13 @@
             />
 
 
-        <!--  Password Label -->
+        <!--  OTP Label -->
        <android.support.design.widget.TextInputLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_marginTop="70dp"
            android:layout_marginBottom="8dp">
-           <EditText android:id="@+id/input_password"
+           <EditText android:id="@+id/input_otp"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:inputType="textPassword"
@@ -51,7 +52,23 @@
             android:layout_marginTop="60dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:text="Login"/>
+            android:text="Confirm"/>
+
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/error"
+            android:textSize="20sp"
+            android:textColor="#fffcfc"
+            android:shadowColor="#dfdbdb"
+            android:focusableInTouchMode="false"
+            android:textIsSelectable="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:textAlignment="center" />
 
 
     </LinearLayout>
