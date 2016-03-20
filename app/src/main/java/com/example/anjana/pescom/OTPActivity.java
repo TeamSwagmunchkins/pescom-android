@@ -2,7 +2,6 @@ package com.example.anjana.pescom;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.anjana.pescom.util.Preferences;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -29,7 +31,6 @@ public class OTPActivity extends AppCompatActivity {
     protected EditText _OTPText;
     protected static TextView _error;
     protected String phone;
-    protected static String storage = "User_tokens";
     protected ProgressDialog progressDialog;
 
     @Override
@@ -89,25 +90,18 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     public void storeData(JSONObject json, String phone) {
-        SharedPreferences mem = getSharedPreferences(storage, MODE_PRIVATE);
+        Preferences preferences = Preferences.getPreferences(this);
+        preferences.setNumber(phone);
         try {
-            mem.edit().putString(phone, json.get("token").toString());
-        } catch (Exception E) {
-            E.printStackTrace();
+            preferences.setToken(json.getString("token"));
+        } catch (JSONException e) {
+            Log.e("OTPActivity", "Fail parsing json: " + json, e);
         }
-    }
-
-
-   @Override
-    public void onBackPressed() {
-        // Disable going back to the MainActivity
-        moveTaskToBack(true);
     }
 
     public void onLoginSuccess() {
         Toast.makeText(getBaseContext(), "LOGIN SUCCESSFUL", Toast.LENGTH_LONG).show();
-        _loginButton.setEnabled(true);
-        finish();
+        startActivity(new Intent(this, VoipActivity.class));
     }
 
     public void onLoginFailed(String s) {
@@ -117,19 +111,13 @@ public class OTPActivity extends AppCompatActivity {
 
     }
 
-
-    public static void setErrorText(String s) {
-        _error.setText(s);
-    }
-
-
     private class Task extends AsyncTask<String, Void, Boolean> {
 
         private String error_str="";
 
         protected Boolean doInBackground(String... urls) {
 
-            String data = null;
+            String data;
             try {
                 Log.i("EventOTP:", "INTASK");
                 //data = URLEncoder.encode("phone_number", "UTF-8") + "=" + URLEncoder.encode(urls[0], "UTF-8");
@@ -148,6 +136,7 @@ public class OTPActivity extends AppCompatActivity {
 
                 int status = conn.getResponseCode();
                 if (status != 200) {
+                    // TODO: show correct error reason based on response code
                     throw new IOException("Post failed with error code " + status);
                 }
                 InputStream res = conn.getInputStream();
@@ -158,13 +147,9 @@ public class OTPActivity extends AppCompatActivity {
                 if (json.get("success").toString().equals("true")) {
                     //save token and ph number
                     OTPActivity.this.storeData(json, urls[0]);
-
-
                 } else {
-
                     error_str="Login failed";
                     return false;
-
                 }
             } catch (Exception E) {
 
@@ -181,11 +166,8 @@ public class OTPActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean s) {
             progressDialog.dismiss();
             if (s) {
-
-
                 //Create new activity for user account
                 onLoginSuccess();
-                OTPActivity.this.finish();
             } else {
                 Log.i("elsePostExecute", "failed");
                 onLoginFailed(error_str);
@@ -199,10 +181,10 @@ public class OTPActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             Scanner se = new Scanner(is);
 
-            String line = "";
             try {
                 while (se.hasNextLine()) {
-                    sb.append(se.nextLine() + "\n");
+                    sb.append(se.nextLine());
+                    sb.append("\n");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
