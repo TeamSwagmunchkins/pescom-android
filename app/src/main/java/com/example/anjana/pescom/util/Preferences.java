@@ -12,7 +12,7 @@ public class Preferences {
     private static String SHARED_PREF_NAME = "sharedPref";
 
     private static String KEY_TOKEN = "token";
-    private static String KEY_PH_NUMBER = "token";
+    private static String KEY_PH_NUMBER = "ph_number";
 
     private Preferences(Context context) {
         mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);

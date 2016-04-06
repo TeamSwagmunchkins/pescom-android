@@ -1,4 +1,4 @@
-package com.example.anjana.pescom;
+package com.example.anjana.pescom.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.anjana.pescom.R;
 
 
 public class SignupActivity extends AppCompatActivity {

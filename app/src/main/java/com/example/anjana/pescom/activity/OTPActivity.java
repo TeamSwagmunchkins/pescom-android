@@ -1,4 +1,4 @@
-package com.example.anjana.pescom;
+package com.example.anjana.pescom.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,8 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.anjana.pescom.R;
 import com.example.anjana.pescom.util.Preferences;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -21,164 +23,150 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Scanner;
 
+public class OTPActivity extends AppCompatActivity {
 
-public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "LoginActivity";
-    private static final int REQUEST_OTP = 0;
-    protected static EditText _phoneText;
-    protected static Button _loginButton;
+    protected Button _loginButton;
+    protected EditText _OTPText;
     protected static TextView _error;
-    private ProgressDialog progressDialog;
+    protected String phone;
+    protected ProgressDialog progressDialog;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_otp);
 
-        if (Preferences.getPreferences(this).getToken() != null) {
-            Intent i = new Intent(this, VoipActivity.class);
-            startActivity(i);
-            finish();
-        }
 
-        _phoneText = (EditText) findViewById(R.id.input_phone);
+        Intent intent = getIntent();
+
+        // 2. get message value from intent
+        phone = intent.getStringExtra("phone");
 
         _loginButton = (Button) findViewById(R.id.btn_login);
-
+        _OTPText = (EditText) findViewById(R.id.input_otp);
         _error = (TextView) findViewById(R.id.error);
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
-                _error.setText("");
-                Log.i("FUNC", "loginbuttonClickedINPage1");
-                //send post request
-                if (validate())
-                    sendRequest_phone();
-                else {
-                    Toast.makeText(getBaseContext(), "INVALID PHONE NUMBER", Toast.LENGTH_LONG).show();
-                }
-                Log.i("return:", "after everything");
-
+                login();
             }
         });
+
+        progressDialog = new ProgressDialog(OTPActivity.this, R.style.AppTheme_Dark_Dialog);
+
     }
 
-    public String sendRequest_phone() {
-        String phone = _phoneText.getText().toString();
+
+    public void login() {
+
+        _loginButton.setEnabled(false);
+
         _error.setText("");
-        Log.i("FUNC", "sendRequest_phone");
+        Log.i("EventOTP:", "INLOgin");
+
+        String otp = _OTPText.getText().toString();
+
+
         try {
-            progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
+
             progressDialog.setMessage("Authenticating..");
             progressDialog.show();
-            new MyTask().execute(phone);
+            if (!otp.equals("")) {
+                new Task().execute(phone, otp);
+            }
+            else {
+               onLoginFailed("Please enter OTP");
+            }
+
         } catch (Exception E) {
             E.printStackTrace();
         }
-        return null;
+
     }
 
-    @Override
-    public void onBackPressed() {
-        // Disable going back to the MainActivity
-        moveTaskToBack(true);
+    public void storeData(JSONObject json, String phone) {
+        Preferences preferences = Preferences.getPreferences(this);
+        preferences.setNumber(phone);
+        try {
+            preferences.setToken(json.getString("token"));
+        } catch (JSONException e) {
+            Log.e("OTPActivity", "Fail parsing json: " + json, e);
+        }
     }
 
     public void onLoginSuccess() {
-        Intent intent = new Intent(this, OTPActivity.class);
-        intent.putExtra("phone", _phoneText.getText().toString());
-
-        startActivityForResult(intent, REQUEST_OTP);
-        _loginButton.setEnabled(true);
+        Toast.makeText(getBaseContext(), "LOGIN SUCCESSFUL", Toast.LENGTH_LONG).show();
+        startActivity(new Intent(this, TestActivity.class));
     }
 
     public void onLoginFailed(String s) {
         Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
+
+        _loginButton.setEnabled(true);
+
     }
 
-    public boolean validate() {
+    private class Task extends AsyncTask<String, Void, Boolean> {
 
-        boolean valid = true;
-
-        String phone = _phoneText.getText().toString();
-
-        if (phone.length() != 10)
-            valid = false;
-        else {
-            if (!phone.matches("[0-9]+")) {
-                valid = false;
-            }
-        }
-        return valid;
-    }
-
-    private class MyTask extends AsyncTask<String, Boolean, Boolean> {
-
-        private String error_str = "";
-
-        @Override
-        protected void onPreExecute() {
-
-        }
+        private String error_str="";
 
         protected Boolean doInBackground(String... urls) {
+
+            String data;
             try {
-                String data = "phone_number=" + urls[0];
-                URL url = new URL("https://secure-garden-80717.herokuapp.com/signup");
-                Log.i(TAG, "openURL");
+                Log.i("EventOTP:", "INTASK");
+                //data = URLEncoder.encode("phone_number", "UTF-8") + "=" + URLEncoder.encode(urls[0], "UTF-8");
+                //data += "&" + URLEncoder.encode("otp", "UTF-8") + "=" + URLEncoder.encode(urls[1], "UTF-8");
+                data="phone_number="+ URLEncoder.encode(urls[0], "UTF-8")+"&otp="+ URLEncoder.encode(urls[1], "UTF-8");
+                URL url = new URL("https://secure-garden-80717.herokuapp.com/authenticate");
+
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                Log.i(TAG, "OpeningURLConnection");
-                conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
 
+
+                System.out.println(data);
                 DataOutputStream dStream = new DataOutputStream(conn.getOutputStream());
                 dStream.writeBytes(data);
                 dStream.flush();
 
                 int status = conn.getResponseCode();
-                Log.i("  Status", String.valueOf(status));
                 if (status != 200) {
+                    // TODO: show correct error reason based on response code
                     throw new IOException("Post failed with error code " + status);
                 }
-
-                Log.i(TAG, "sentOTPRequest");
-
                 InputStream res = conn.getInputStream();
-                Log.i(TAG, "Receiving Response");
-
                 String response = convertStreamToString(res);
-                Log.i(TAG, response);
+
                 JSONObject json = new JSONObject(response);
 
                 if (json.get("success").toString().equals("true")) {
-                    // TODO: JSON
+                    //save token and ph number
+                    OTPActivity.this.storeData(json, urls[0]);
                 } else {
-                    //display message as otp was not received
-                    error_str = "OTP not received. Login failed";
+                    error_str="Login failed";
                     return false;
-
                 }
             } catch (Exception E) {
 
                 E.printStackTrace();
-                Log.i("errorLOGIN", "Exception");
-
-                error_str = "Login failed";
+                error_str="Login failed";
                 return false;
 
+
             }
-            return true;
+            return true; //change this
         }
 
         @Override
         protected void onPostExecute(Boolean s) {
             progressDialog.dismiss();
             if (s) {
+                //Create new activity for user account
                 onLoginSuccess();
             } else {
                 Log.i("elsePostExecute", "failed");
@@ -186,7 +174,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
+
         private String convertStreamToString(InputStream is) {
+
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
             Scanner se = new Scanner(is);
 
@@ -207,4 +198,5 @@ public class LoginActivity extends AppCompatActivity {
             return sb.toString();
         }
     }
+
 }
