@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.anjana.pescom.R;
+import com.example.anjana.pescom.service.PushService;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -16,6 +17,9 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent intent = new Intent(this, PushService.class);
+        startService(intent);
     }
 
     @SuppressWarnings("unused") // used in xml

@@ -16,7 +16,6 @@ import java.util.Scanner;
 
 public class RequestHelper {
     private final static String EP_VOIP_GET_IP = "call";
-    private final static String SITE_URL = "https://secure-garden-80717.herokuapp.com/";
 
     private final static String LOG_TAG = "RequestHelper";
 
@@ -58,7 +57,7 @@ public class RequestHelper {
     }
 
     private static RequestResult makeRequest(String ep, ContentValues params) throws IOException {
-        URL url = new URL(SITE_URL + ep);
+        URL url = new URL(Constants.BASE_URL + ep);
         Log.d(LOG_TAG, "Making request to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

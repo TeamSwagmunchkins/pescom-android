@@ -43,10 +43,10 @@ public class AudioRecorderThread extends Thread {
          * playback.
          */
         try {
-            int N = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-            recorder = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, 8000,
+            int N = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            recorder = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, 44100,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10);
-            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 8000,
+            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 44100,
                     AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10, AudioTrack.MODE_STREAM);
             recorder.startRecording();
             mTrack.play();

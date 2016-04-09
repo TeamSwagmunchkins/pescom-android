@@ -3,44 +3,97 @@ package com.example.anjana.pescom.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Messenger;
 import android.util.Log;
 
 import com.example.anjana.pescom.call.AudioRecorderThread;
+import com.example.anjana.pescom.util.Constants;
+import com.example.anjana.pescom.util.PduHelper;
+import com.example.anjana.pescom.util.Preferences;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-/**
- * Created by abrahamphilip on 26/1/16.
- */
 public class CallMakerService extends IntentService {
 
+    private final static String ACTION_CALL = "call";
+    private final static String ACTION_NEGOTIATE = "negotiate";
+
     private static final String EXTRA_IP = "ip";
+    private static final String EXTRA_PORT = "port";
 
     public CallMakerService() {
         super("CallMakerService");
     }
 
-    public static void makeCall(Context context, String ip) {
-        Log.d("PHILIP", "making call");
+    public static void makeCall(Context context, String ip, int port) {
+        Log.d("CallMakerService", "making call");
         Intent intent = new Intent(context, CallMakerService.class);
+        intent.setAction(ACTION_CALL);
         intent.putExtra(EXTRA_IP, ip);
+        intent.putExtra(EXTRA_PORT, port);
+        context.startService(intent);
+    }
+
+    public static void startVoipNeg(Context context, String ip, int port) {
+        Log.d("CallMakerService", "initiating negotiation");
+        Intent intent = new Intent(context, CallMakerService.class);
+        intent.setAction(ACTION_NEGOTIATE);
+        intent.putExtra(EXTRA_IP, ip);
+        intent.putExtra(EXTRA_PORT, port);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         //Log.d("PHILIP", "handling intent");
-        try {
-            Socket connection = new Socket();
-            //Log.d("PHILIP", "connecting");
-            connection.connect(new InetSocketAddress(intent.getStringExtra(EXTRA_IP),
-                    CallListenerService.LISTEN_PORT));
-            //Log.d("PHILIP", "connected");
-            new AudioRecorderThread(connection.getOutputStream(), connection.getInputStream()).run();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (intent != null && intent.getAction() != null) {
+            switch (intent.getAction()) {
+                case ACTION_CALL:
+                    try {
+                        Socket connection = new Socket();
+                        //Log.d("PHILIP", "connecting");
+                        connection.connect(new InetSocketAddress(intent.getStringExtra(EXTRA_IP),
+                                intent.getIntExtra(EXTRA_PORT, -1)));
+                        //Log.d("PHILIP", "connected");
+                        new AudioRecorderThread(connection.getOutputStream(), connection.getInputStream()).run();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case ACTION_NEGOTIATE:
+                    Socket connection = null;
+                    try {
+                        connection = new Socket();
+                        connection.connect(new InetSocketAddress(intent.getStringExtra(EXTRA_IP),
+                                intent.getIntExtra(EXTRA_PORT, -1)));
+                        PduHelper.sendProtocolMessage(connection.getOutputStream(),
+                                PduHelper.CODE_VOIP_NEG_INCOMING + ":" + Constants.VOIP_REC_PORT
+                                        + ":" + Preferences.getPreferences(this).getNumber());
+                        String parts[] = PduHelper.getProtocolMessage(connection.getInputStream());
+                        if (parts[0].equals(PduHelper.CODE_RESPONSE_ACK + "")) {
+                            Log.i("CallMakerService", "Negotiation successful, started listening!");
+                            CallListenerService.startListening(this, Constants.VOIP_REC_PORT);
+                        }
+                    } catch (Exception e) {
+                        // whatever happens, just print info and exit
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (connection != null) connection.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    private class VoipNegotiationListenerThread {
+        public VoipNegotiationListenerThread(Messenger messenger) {
+
         }
     }
 }

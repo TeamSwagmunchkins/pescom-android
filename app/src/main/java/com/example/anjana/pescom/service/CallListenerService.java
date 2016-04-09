@@ -18,14 +18,15 @@ import java.net.Socket;
  * TODO: Customize class - update intent actions, extra parameters and static helper methods
  */
 public class CallListenerService extends IntentService {
-    public static int LISTEN_PORT = 9832;
-    public static void startListening(Context context) {
+    private static final String EXTRA_PORT = "port";
+    public static void startListening(Context context, int port) {
         Intent intent = new Intent(context, CallListenerService.class);
+        intent.putExtra(EXTRA_PORT, port);
         context.startService(intent);
     }
 
     public CallListenerService() {
-        super("CallListenerServie");
+        super("CallListenerService");
     }
 
     @Override
@@ -33,8 +34,8 @@ public class CallListenerService extends IntentService {
         try {
             ServerSocket listenerSocket = new ServerSocket();
             listenerSocket.setReuseAddress(true);
-            listenerSocket.bind(new InetSocketAddress("0.0.0.0", LISTEN_PORT));
-            Log.d("PHILIP", "listening");
+            listenerSocket.bind(new InetSocketAddress("0.0.0.0", intent.getIntExtra(EXTRA_PORT, -1)));
+            Log.d("PHILIP", "listening at " + intent.getIntExtra(EXTRA_PORT, -1));
             Socket connection = listenerSocket.accept();
             AudioRecorderThread thread = new AudioRecorderThread(connection.getOutputStream(),
                     connection.getInputStream());

@@ -38,18 +38,12 @@ public class VoipActivity extends AppCompatActivity {
         isIpTest = getIntent().getBooleanExtra(EXTRA_IP_TEST, false);
 
         mDestEt = (EditText) findViewById(R.id.ip_et);
-
-        startListening();
-    }
-
-    private void startListening() {
-        CallListenerService.startListening(this);
     }
 
     public void call(View v) {
         Log.d("isIptest", "" + isIpTest);
         if (isIpTest) {
-            CallMakerService.makeCall(this, mDestEt.getText().toString());
+            CallMakerService.makeCall(this, mDestEt.getText().toString(), 8989);
         } else {
             Intent serviceIntent = new Intent(this, ServerRequestService.class);
             serviceIntent.putExtra(ServerRequestService.EXTRA_VOIP_GET_IP_TO,
@@ -64,12 +58,14 @@ public class VoipActivity extends AppCompatActivity {
                             switch (result.RESPONSE_CODE) {
                                 case 200:
                                     try {
+                                        Log.d("PHILIP", result.RESPONSE_BODY + "");
                                         JSONObject json = new JSONObject(result.RESPONSE_BODY);
                                         String ip = json.getString("ip_address");
                                         int port = json.getInt("port");
                                         Toast.makeText(VoipActivity.this, ip + ":" + port,
                                                 Toast.LENGTH_SHORT)
                                                 .show();
+                                        CallMakerService.startVoipNeg(VoipActivity.this, ip, port);
                                     } catch (JSONException e) {
                                         Log.e(VoipActivity.LOG_TAG, "JSON parsing failed for: "
                                                 + result.RESPONSE_BODY, e);

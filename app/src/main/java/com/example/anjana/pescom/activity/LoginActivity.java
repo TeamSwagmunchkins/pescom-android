@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
+import com.example.anjana.pescom.util.Constants;
 import com.example.anjana.pescom.util.Preferences;
 
 import org.json.JSONObject;
@@ -130,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... urls) {
             try {
                 String data = "phone_number=" + urls[0];
-                URL url = new URL("https://secure-garden-80717.herokuapp.com/signup");
+                URL url = new URL(Constants.SIGNUP_URL);
                 Log.i(TAG, "openURL");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 Log.i(TAG, "OpeningURLConnection");
@@ -144,6 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                 int status = conn.getResponseCode();
                 Log.i("  Status", String.valueOf(status));
                 if (status != 200) {
+                    Log.d("PHILIP", convertStreamToString(conn.getInputStream()));
                     throw new IOException("Post failed with error code " + status);
                 }
 

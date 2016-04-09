@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
+import com.example.anjana.pescom.util.Constants;
 import com.example.anjana.pescom.util.Preferences;
 
 import org.json.JSONException;
@@ -25,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Scanner;
+import java.util.concurrent.CompletionService;
 
 public class OTPActivity extends AppCompatActivity {
 
@@ -94,6 +96,7 @@ public class OTPActivity extends AppCompatActivity {
         preferences.setNumber(phone);
         try {
             preferences.setToken(json.getString("token"));
+            Log.d("TOKEN", preferences.getToken());
         } catch (JSONException e) {
             Log.e("OTPActivity", "Fail parsing json: " + json, e);
         }
@@ -123,7 +126,7 @@ public class OTPActivity extends AppCompatActivity {
                 //data = URLEncoder.encode("phone_number", "UTF-8") + "=" + URLEncoder.encode(urls[0], "UTF-8");
                 //data += "&" + URLEncoder.encode("otp", "UTF-8") + "=" + URLEncoder.encode(urls[1], "UTF-8");
                 data="phone_number="+ URLEncoder.encode(urls[0], "UTF-8")+"&otp="+ URLEncoder.encode(urls[1], "UTF-8");
-                URL url = new URL("https://secure-garden-80717.herokuapp.com/authenticate");
+                URL url = new URL(Constants.OTP_URL);
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);
@@ -146,7 +149,7 @@ public class OTPActivity extends AppCompatActivity {
 
                 if (json.get("success").toString().equals("true")) {
                     //save token and ph number
-                    OTPActivity.this.storeData(json, urls[0]);
+                    storeData(json, urls[0]);
                 } else {
                     error_str="Login failed";
                     return false;
