@@ -26,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Scanner;
-import java.util.concurrent.CompletionService;
 
 public class OTPActivity extends AppCompatActivity {
 
@@ -126,7 +125,8 @@ public class OTPActivity extends AppCompatActivity {
                 //data = URLEncoder.encode("phone_number", "UTF-8") + "=" + URLEncoder.encode(urls[0], "UTF-8");
                 //data += "&" + URLEncoder.encode("otp", "UTF-8") + "=" + URLEncoder.encode(urls[1], "UTF-8");
                 data="phone_number="+ URLEncoder.encode(urls[0], "UTF-8")+"&otp="+ URLEncoder.encode(urls[1], "UTF-8");
-                URL url = new URL(Constants.OTP_URL);
+                URL url = new URL(Preferences.getPreferences(OTPActivity.this).getUrl(
+                        Constants.OTP_EP));
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);
@@ -146,14 +146,8 @@ public class OTPActivity extends AppCompatActivity {
                 String response = convertStreamToString(res);
 
                 JSONObject json = new JSONObject(response);
-
-                if (json.get("success").toString().equals("true")) {
                     //save token and ph number
                     storeData(json, urls[0]);
-                } else {
-                    error_str="Login failed";
-                    return false;
-                }
             } catch (Exception E) {
 
                 E.printStackTrace();

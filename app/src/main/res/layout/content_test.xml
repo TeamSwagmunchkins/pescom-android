@@ -27,4 +27,16 @@
         android:onClick="onNumberClick"
         android:text="VoIP Number Test"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onUpdateClick"
+        android:text="Update IP"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onSettingsClick"
+        android:text="Settings"/>
+
 </LinearLayout>

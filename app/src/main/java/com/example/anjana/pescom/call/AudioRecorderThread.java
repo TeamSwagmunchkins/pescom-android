@@ -43,14 +43,14 @@ public class AudioRecorderThread extends Thread {
          * playback.
          */
         try {
-            int N = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-            recorder = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, 44100,
+            int N = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            Log.d("N", "" + N);
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000,
                     AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10);
-            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 44100,
+            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 8000,
                     AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10, AudioTrack.MODE_STREAM);
             recorder.startRecording();
             mTrack.play();
-            Log.d("N", "" + N);
             /*
              * Loops until something outside of this thread stops it.
              * Reads the data from the recorder and writes it to the audio track for playback.
@@ -97,6 +97,33 @@ public class AudioRecorderThread extends Thread {
      */
     private void close() {
         stopped = true;
+    }
+
+    private static int[] mSampleRates = new int[]{8000, 11025, 22050, 44100};
+
+    public AudioRecord findAudioRecord() {
+        for (int rate : mSampleRates) {
+            for (short audioFormat : new short[]{AudioFormat.ENCODING_PCM_8BIT, AudioFormat.ENCODING_PCM_16BIT}) {
+                for (short channelConfig : new short[]{AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO}) {
+                    try {
+                        Log.d("AudioRecorderThread", "Attempting rate " + rate + "Hz, bits: " + audioFormat + ", channel: "
+                                + channelConfig);
+                        int bufferSize = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat);
+
+                        if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                            // check if we can instantiate and have a success
+                            AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, rate, channelConfig, audioFormat, bufferSize);
+
+                            if (recorder.getState() == AudioRecord.STATE_INITIALIZED)
+                                return recorder;
+                        }
+                    } catch (Exception e) {
+                        Log.e("AudioRecorderThread", rate + "Exception, keep trying.", e);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 }

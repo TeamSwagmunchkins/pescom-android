@@ -131,7 +131,8 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... urls) {
             try {
                 String data = "phone_number=" + urls[0];
-                URL url = new URL(Constants.SIGNUP_URL);
+                URL url = new URL(Preferences.getPreferences(LoginActivity.this).getUrl(
+                        Constants.SIGNUP_EP));
                 Log.i(TAG, "openURL");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 Log.i(TAG, "OpeningURLConnection");
@@ -147,24 +148,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (status != 200) {
                     Log.d("PHILIP", convertStreamToString(conn.getInputStream()));
                     throw new IOException("Post failed with error code " + status);
-                }
-
-                Log.i(TAG, "sentOTPRequest");
-
-                InputStream res = conn.getInputStream();
-                Log.i(TAG, "Receiving Response");
-
-                String response = convertStreamToString(res);
-                Log.i(TAG, response);
-                JSONObject json = new JSONObject(response);
-
-                if (json.get("success").toString().equals("true")) {
-                    // TODO: JSON
-                } else {
-                    //display message as otp was not received
-                    error_str = "OTP not received. Login failed";
-                    return false;
-
                 }
             } catch (Exception E) {
 
@@ -209,5 +192,11 @@ public class LoginActivity extends AppCompatActivity {
             }
             return sb.toString();
         }
+    }
+
+    @SuppressWarnings("unused") // used in xml
+    public void onSettingsClick(View v) {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
     }
 }

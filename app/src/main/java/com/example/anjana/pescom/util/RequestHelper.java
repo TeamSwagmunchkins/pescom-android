@@ -1,6 +1,7 @@
 package com.example.anjana.pescom.util;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -15,13 +16,13 @@ import java.net.URLEncoder;
 import java.util.Scanner;
 
 public class RequestHelper {
-    private final static String EP_VOIP_GET_IP = "call";
 
     private final static String LOG_TAG = "RequestHelper";
 
     public static class RequestResult implements Parcelable {
         public final int RESPONSE_CODE;
         public final String RESPONSE_BODY;
+
         private RequestResult(int code, String body) {
             RESPONSE_BODY = body;
             RESPONSE_CODE = code;
@@ -56,8 +57,8 @@ public class RequestHelper {
         }
     }
 
-    private static RequestResult makeRequest(String ep, ContentValues params) throws IOException {
-        URL url = new URL(Constants.BASE_URL + ep);
+    private static RequestResult makeRequest(String ep, ContentValues params, Context context) throws IOException {
+        URL url = new URL(Preferences.getPreferences(context).getUrl(ep));
         Log.d(LOG_TAG, "Making request to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -98,7 +99,7 @@ public class RequestHelper {
     private static String getEncodedParams(ContentValues params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
-        for(String key : params.keySet()){
+        for (String key : params.keySet()) {
             if (first)
                 first = false;
             else
@@ -112,7 +113,8 @@ public class RequestHelper {
         return result.toString();
     }
 
-    public static RequestResult makeVoipGetIp(String fromNo, String token, String toNo) throws IOException {
+    public static RequestResult makeVoipGetIp(String fromNo, String token, String toNo,
+                                              Context context) throws IOException {
         final String fromKey = "from_phone_number";
         final String toKey = "to_phone_number";
         final String tokenKey = "token";
@@ -122,6 +124,22 @@ public class RequestHelper {
         params.put(tokenKey, token);
         params.put(toKey, toNo);
 
-        return makeRequest(EP_VOIP_GET_IP, params);
+        return makeRequest(Constants.CALL_EP, params, context);
+    }
+
+    public static RequestResult makeUpdateIp(String number, String token, String ip, int port,
+                                           Context context) throws IOException {
+        final String numberKey = "phone_number";
+        final String tokenKey = "token";
+        final String ipKey = "ip_address";
+        final String portKey = "port";
+
+        ContentValues params = new ContentValues();
+        params.put(numberKey, number);
+        params.put(tokenKey, token);
+        params.put(ipKey, ip);
+        params.put(portKey, port);
+
+        return makeRequest(Constants.UPDATE_IP_EP, params, context);
     }
 }

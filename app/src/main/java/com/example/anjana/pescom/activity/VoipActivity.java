@@ -15,6 +15,7 @@ import com.example.anjana.pescom.R;
 import com.example.anjana.pescom.service.CallListenerService;
 import com.example.anjana.pescom.service.CallMakerService;
 import com.example.anjana.pescom.service.ServerRequestService;
+import com.example.anjana.pescom.util.Constants;
 import com.example.anjana.pescom.util.RequestHelper;
 
 import org.json.JSONException;
@@ -37,13 +38,17 @@ public class VoipActivity extends AppCompatActivity {
 
         isIpTest = getIntent().getBooleanExtra(EXTRA_IP_TEST, false);
 
+        if (isIpTest) {
+            CallListenerService.startListening(this, Constants.VOIP_REC_PORT);
+        }
+
         mDestEt = (EditText) findViewById(R.id.ip_et);
     }
 
     public void call(View v) {
         Log.d("isIptest", "" + isIpTest);
         if (isIpTest) {
-            CallMakerService.makeCall(this, mDestEt.getText().toString(), 8989);
+            CallMakerService.makeCall(this, mDestEt.getText().toString(), Constants.VOIP_REC_PORT);
         } else {
             Intent serviceIntent = new Intent(this, ServerRequestService.class);
             serviceIntent.putExtra(ServerRequestService.EXTRA_VOIP_GET_IP_TO,
@@ -88,7 +93,7 @@ public class VoipActivity extends AppCompatActivity {
                     }
             );
 
-            serviceIntent.putExtra(ServerRequestService.EXTRA_HANDLER,
+            serviceIntent.putExtra(ServerRequestService.EXTRA_MESSENGER,
                     messenger);
 
             serviceIntent.setAction(ServerRequestService.ACTION_VOIP_GET_IP);

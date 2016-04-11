@@ -9,13 +9,15 @@ public class Preferences {
 
     private final SharedPreferences mSharedPreferences;
 
-    private static String SHARED_PREF_NAME = "sharedPref";
+    private final static String SHARED_PREF_NAME = "sharedPref";
 
-    private static String KEY_TOKEN = "token";
-    private static String KEY_PH_NUMBER = "ph_number";
+    private final static String KEY_TOKEN = "token";
+    private final static String KEY_PH_NUMBER = "ph_number";
+    private final static String KEY_SERVER_URL = "server_url";
 
     private Preferences(Context context) {
         mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        sPreferences = this;
     }
 
     public static Preferences getPreferences(Context context) {
@@ -23,7 +25,7 @@ public class Preferences {
     }
 
     public void setToken(String token) {
-        mSharedPreferences.edit().putString(KEY_TOKEN, token).commit();
+        mSharedPreferences.edit().putString(KEY_TOKEN, token).apply();
     }
 
     public String getToken() {
@@ -31,10 +33,22 @@ public class Preferences {
     }
 
     public void setNumber(String number) {
-        mSharedPreferences.edit().putString(KEY_PH_NUMBER, number).commit();
+        mSharedPreferences.edit().putString(KEY_PH_NUMBER, number).apply();
     }
 
     public String getNumber() {
         return mSharedPreferences.getString(KEY_PH_NUMBER, null);
+    }
+
+    public void setUrl(String url) {
+        mSharedPreferences.edit().putString(KEY_SERVER_URL, url).apply();
+    }
+
+    public String getUrl(String ep) {
+        return getUrl() + ep;
+    }
+
+    public String getUrl() {
+        return mSharedPreferences.getString(KEY_SERVER_URL, "http://192.168.5.100:8080/");
     }
 }

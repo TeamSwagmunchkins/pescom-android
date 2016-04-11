@@ -1,12 +1,10 @@
 package com.example.anjana.pescom.util;
 
 public class Constants {
-    private static final boolean LOCAL = true;
-    public final static String BASE_URL= LOCAL ?
-            "http://192.168.5.34:8080/" : "https://secure-garden-80717.herokuapp.com/";
-    public static final String SIGNUP_URL = BASE_URL + "login";
-    public static final String OTP_URL = BASE_URL + "authenticate";
-    public static final String CALL_URL = BASE_URL + "call";
+    public static final String SIGNUP_EP = "login";
+    public static final String OTP_EP = "authenticate";
+    public static final String CALL_EP = "call";
+    public static final String UPDATE_IP_EP = "update_ip";
 
     public static final int PUSH_PORT = 8989;
     public static final int VOIP_NEG_PORT = 7678;
