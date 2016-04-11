@@ -29,9 +29,6 @@ public class AudioRecorderThread extends Thread {
     @Override
     public void run() {
 
-        final AudioEncoder encoder = new AudioEncoder(mOutputStream);
-        final AudioDecoder decoder = new AudioDecoder(mInputStream);
-
         // android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
         Log.d("Audio", "Running Audio Thread");
         AudioRecord recorder = null;
@@ -42,15 +39,21 @@ public class AudioRecorderThread extends Thread {
          * Initialize buffer to hold continuously recorded audio data, start recording, and start
          * playback.
          */
+        final int encoding = AudioFormat.ENCODING_PCM_8BIT;
+        final int bitRate = 8000;
         try {
-            int N = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            int N = AudioRecord.getMinBufferSize(bitRate, AudioFormat.CHANNEL_IN_MONO,
+                    encoding);
             Log.d("N", "" + N);
-            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000,
-                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10);
-            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 8000,
-                    AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, N * 10, AudioTrack.MODE_STREAM);
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, bitRate,
+                    AudioFormat.CHANNEL_IN_MONO, encoding, N * 10);
+            mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, bitRate,
+                    AudioFormat.CHANNEL_OUT_MONO, encoding, N * 10, AudioTrack.MODE_STREAM);
             recorder.startRecording();
             mTrack.play();
+
+            final AudioEncoder encoder = new AudioEncoder(mOutputStream);
+            final AudioDecoder decoder = new AudioDecoder(mInputStream, N * 10);
             /*
              * Loops until something outside of this thread stops it.
              * Reads the data from the recorder and writes it to the audio track for playback.
@@ -73,7 +76,7 @@ public class AudioRecorderThread extends Thread {
             while (!stopped) {
                 // Log.i("Map", "Writing new data to buffer");
                 short[] buffer = buffers[ix++ % buffers.length];
-                N = recorder.read(buffer, 0, buffer.length);
+                recorder.read(buffer, 0, buffer.length);
                 encoder.write(buffer, 0, buffer.length);
                 // encoder.flush();
                 // Log.d("N", "" + N);
@@ -85,8 +88,10 @@ public class AudioRecorderThread extends Thread {
         /*
          * Frees the thread's resources after the loop completes so that it can be run again
          */ finally {
-            recorder.stop();
-            recorder.release();
+            if (recorder != null) {
+                recorder.stop();
+                recorder.release();
+            }
             mTrack.stop();
             mTrack.release();
         }

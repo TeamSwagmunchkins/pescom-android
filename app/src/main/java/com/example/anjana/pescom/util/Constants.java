@@ -11,6 +11,8 @@ public class Constants {
     public static final int MAX_PDU_LENGTH_LIMIT = 1028; // number of characters
 
     public static final int VOIP_REC_PORT = 9768;
+    public static final int VOIP_UDP_RECEIVER_PORT = 9799;
+    public static final int VOIP_UDP_SENDER_PORT = 9799;
 
     public static class Timeout {
         public static final int PUSH_SOCK_READ = 30 * 1000;

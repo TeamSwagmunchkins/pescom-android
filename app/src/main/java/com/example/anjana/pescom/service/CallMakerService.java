@@ -10,6 +10,8 @@ import com.example.anjana.pescom.call.AudioRecorderThread;
 import com.example.anjana.pescom.util.Constants;
 import com.example.anjana.pescom.util.PduHelper;
 import com.example.anjana.pescom.util.Preferences;
+import com.example.anjana.pescom.util.UdpInputStream;
+import com.example.anjana.pescom.util.UdpOutputStream;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +19,9 @@ import java.net.Socket;
 
 public class CallMakerService extends IntentService {
 
+    // actually connect to the call receiving socket, after user has accepted call
     private final static String ACTION_CALL = "call";
+    // begin negotiation with a given IP and port
     private final static String ACTION_NEGOTIATE = "negotiate";
 
     private static final String EXTRA_IP = "ip";
@@ -56,8 +60,17 @@ public class CallMakerService extends IntentService {
                         //Log.d("PHILIP", "connecting");
                         connection.connect(new InetSocketAddress(intent.getStringExtra(EXTRA_IP),
                                 intent.getIntExtra(EXTRA_PORT, -1)));
+                        // we just want the connection to be successful so the other person gets
+                        // our ip and knows we're ready. That happened if we reaached here.
+                        connection.close();
                         //Log.d("PHILIP", "connected");
-                        new AudioRecorderThread(connection.getOutputStream(), connection.getInputStream()).run();
+
+                        UdpOutputStream os = new UdpOutputStream(intent.getStringExtra(EXTRA_IP),
+                                Constants.VOIP_UDP_RECEIVER_PORT);
+                        UdpInputStream is = new UdpInputStream("0.0.0.0",
+                                Constants.VOIP_UDP_SENDER_PORT);
+
+                        new AudioRecorderThread(os, is).run();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

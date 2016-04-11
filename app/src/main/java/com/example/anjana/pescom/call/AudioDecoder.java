@@ -2,38 +2,37 @@ package com.example.anjana.pescom.call;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by abrahamphilip on 27/1/16.
- */
 public class AudioDecoder {
 
     private DataInputStream mInputStream;
+    private final int mBufSize;
 
-    public AudioDecoder(InputStream is) {
+    public AudioDecoder(InputStream is, int bufSize) {
         mInputStream = new DataInputStream(is);
+        mBufSize = bufSize;
     }
 
-    public short[] read() throws IOException, EOFException {
-        int bufLen = mInputStream.readInt();
-        //Log.d("PHILIP", "read " + bufLen);
-        if (bufLen == -1) throw new EOFException();
+    public short[] read() throws IOException {
 
-        short[] buf = new short[bufLen];
+        byte[] tbuf = new byte[2*mBufSize];
 
-        byte[] tbuf = new byte[2*bufLen];
+        int read = mInputStream.read(tbuf, 0, tbuf.length);
 
-        for (int i = 0 ;i<bufLen;i++) {
-            int b1 = mInputStream.read();
-            //Log.d("PHILIP", "read " + b1);
-            int b2 = mInputStream.read();
-            //Log.d("PHILIP", "read " + b2);
-            if (b1 == -1 || b2 == -1) throw new EOFException();
+        // ensure even number
+        if (read%2!=0) read--;
+
+        short[] buf = new short[read/2];
+
+        for (int i = 0 ;i<read;i+=2) {
+            // always even must be ensured earlier in code
+            byte b1 = tbuf[i];
+            byte b2 = tbuf[i+1];
             buf[i] = (short)((b2 << 8) + b1);
         }
-
         return buf;
     }
 }
