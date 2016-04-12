@@ -25,7 +25,6 @@ public class ContactsTabActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -46,14 +45,12 @@ public class ContactsTabActivity extends AppCompatActivity
         //you can leave it empty
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat_call, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -62,7 +59,6 @@ public class ContactsTabActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         return super.onOptionsItemSelected(item);
     }
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -84,7 +80,6 @@ public class ContactsTabActivity extends AppCompatActivity
                 default:
                     return new CallFragment();
             }
-
         }
 
         @Override
@@ -105,8 +100,6 @@ public class ContactsTabActivity extends AppCompatActivity
             return null;
         }
     }
-
-
 }
 
 
