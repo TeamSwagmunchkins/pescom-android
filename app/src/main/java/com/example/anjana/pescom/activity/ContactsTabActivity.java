@@ -13,7 +13,7 @@ import android.view.MenuItem;
 
 import com.example.anjana.pescom.R;
 
-public class ChatCallActivity extends AppCompatActivity
+public class ContactsTabActivity extends AppCompatActivity
         implements ChatFragment.OnListFragmentInteractionListener,
         CallFragment.OnListFragmentInteractionListener {
 
@@ -32,9 +32,6 @@ public class ChatCallActivity extends AppCompatActivity
         assert getSupportActionBar() != null;
         getSupportActionBar().setTitle("PESCom");
         // Set up the ViewPager with the sections adapter.
-        /*
-      The {@link ViewPager} that will host the section contents.
-     */
         ViewPager viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(sectionsPagerAdapter);
 

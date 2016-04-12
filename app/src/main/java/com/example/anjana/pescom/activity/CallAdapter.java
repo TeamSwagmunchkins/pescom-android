@@ -43,11 +43,9 @@ public class CallAdapter extends RecyclerView.Adapter<CallAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    String number=holder.mItem.getNumber();
-                    //Toast.makeText(holder.mView.getContext(), "Number: " + number, Toast.LENGTH_SHORT).show();
-                    //System.out.println("clicked");
+                    // this number should exist on the server already
+                    String number = holder.mItem.getNumber();
+                    
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
             }

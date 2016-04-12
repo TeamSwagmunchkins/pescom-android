@@ -90,7 +90,10 @@ public class DummyContent {
         }
         public String getNumber()
         {
-            return number;
+            if (number.length() < 10) {
+                return "";
+            }
+            return number.substring(number.length()-10);
         }
         //public ImageView getPhoto(){return photo;}
 

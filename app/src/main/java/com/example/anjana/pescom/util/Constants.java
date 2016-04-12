@@ -5,6 +5,7 @@ public class Constants {
     public static final String OTP_EP = "authenticate";
     public static final String CALL_EP = "call";
     public static final String UPDATE_IP_EP = "update_ip";
+    public static final String GET_USERS_EP = "users";
 
     public static final int PUSH_PORT = 8989;
     public static final int VOIP_NEG_PORT = 7678;

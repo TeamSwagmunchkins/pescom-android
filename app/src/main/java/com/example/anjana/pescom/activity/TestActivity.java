@@ -80,7 +80,7 @@ public class TestActivity extends AppCompatActivity {
 
     @SuppressWarnings("unused") // used in xml
     public void onMainScreenClick(View v) {
-        Intent i = new Intent(this, ChatCallActivity.class);
+        Intent i = new Intent(this, ContactsTabActivity.class);
         startActivity(i);
     }
 }

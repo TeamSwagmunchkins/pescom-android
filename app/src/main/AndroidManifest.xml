@@ -50,7 +50,7 @@
             android:name=".activity.IncomingCallActivity"
             android:theme="@style/AppTheme.Dark"/>
         <activity
-            android:name=".activity.ChatCallActivity"
+            android:name=".activity.ContactsTabActivity"
             android:theme="@style/AppTheme.Dark"/>
 
         <service

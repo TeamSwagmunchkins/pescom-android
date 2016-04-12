@@ -19,6 +19,11 @@ public class RequestHelper {
 
     private final static String LOG_TAG = "RequestHelper";
 
+    enum HTTP_METHOD {
+        POST,
+        GET
+    }
+
     public static class RequestResult implements Parcelable {
         public final int RESPONSE_CODE;
         public final String RESPONSE_BODY;
@@ -57,19 +62,35 @@ public class RequestHelper {
         }
     }
 
-    private static RequestResult makeRequest(String ep, ContentValues params, Context context) throws IOException {
-        URL url = new URL(Preferences.getPreferences(context).getUrl(ep));
-        Log.d(LOG_TAG, "Making request to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);
-
-        // write out the parameters
-        DataOutputStream dStream = new DataOutputStream(conn.getOutputStream());
+    private static RequestResult makeRequest(String ep, ContentValues params,
+                                             HTTP_METHOD method,
+                                             Context context) throws IOException {
         String encodedParams = getEncodedParams(params);
-        Log.d(LOG_TAG, "Writing request parameters: " + encodedParams);
-        dStream.writeBytes(encodedParams);
-        dStream.flush();
+        HttpURLConnection conn = null;
+        switch (method) {
+
+            case POST: {
+                URL url = new URL(Preferences.getPreferences(context).getUrl(ep));
+                Log.d(LOG_TAG, "Making request to: " + url.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                // write out the parameters
+                DataOutputStream dStream = new DataOutputStream(conn.getOutputStream());
+                Log.d(LOG_TAG, "Writing request parameters: " + encodedParams);
+                dStream.writeBytes(encodedParams);
+                dStream.flush();
+                break;
+            }
+            case GET: {
+                URL url = new URL(Preferences.getPreferences(context).getUrl(ep)
+                        + "?" + encodedParams);
+                Log.d(LOG_TAG, "Making request to: " + url.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                break;
+            }
+        }
 
         return new RequestResult(conn.getResponseCode(),
                 conn.getResponseCode() == 200 ? convertStreamToString(conn.getInputStream()) : "");
@@ -124,11 +145,11 @@ public class RequestHelper {
         params.put(tokenKey, token);
         params.put(toKey, toNo);
 
-        return makeRequest(Constants.CALL_EP, params, context);
+        return makeRequest(Constants.CALL_EP, params, HTTP_METHOD.POST, context);
     }
 
     public static RequestResult makeUpdateIp(String number, String token, String ip, int port,
-                                           Context context) throws IOException {
+                                             Context context) throws IOException {
         final String numberKey = "phone_number";
         final String tokenKey = "token";
         final String ipKey = "ip_address";
@@ -140,6 +161,16 @@ public class RequestHelper {
         params.put(ipKey, ip);
         params.put(portKey, port);
 
-        return makeRequest(Constants.UPDATE_IP_EP, params, context);
+        return makeRequest(Constants.UPDATE_IP_EP, params, HTTP_METHOD.POST, context);
+    }
+
+    public static RequestResult getRegisteredUsers(String token, Context context)
+            throws IOException {
+        final String tokenKey = "token";
+
+        ContentValues params = new ContentValues();
+        params.put(tokenKey, token);
+
+        return makeRequest(Constants.GET_USERS_EP, params, HTTP_METHOD.GET, context);
     }
 }
