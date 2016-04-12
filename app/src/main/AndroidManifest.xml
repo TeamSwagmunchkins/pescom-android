@@ -49,6 +49,9 @@
         <activity
             android:name=".activity.IncomingCallActivity"
             android:theme="@style/AppTheme.Dark"/>
+        <activity
+            android:name=".activity.ChatCallActivity"
+            android:theme="@style/AppTheme.Dark"/>
 
         <service
             android:name=".service.ServerRequestService"
