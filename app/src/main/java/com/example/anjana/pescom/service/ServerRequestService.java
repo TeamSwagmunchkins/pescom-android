@@ -1,7 +1,6 @@
 package com.example.anjana.pescom.service;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -21,6 +20,7 @@ public class ServerRequestService extends IntentService {
 
     public final static String ACTION_VOIP_GET_IP = "voip_get_ip";
     public final static String ACTION_UPDATE_IP = "update_ip";
+
     public final static String EXTRA_VOIP_GET_IP_TO = "voip_get_ip_to";
     public final static String EXTRA_MESSENGER = "messenger";
 

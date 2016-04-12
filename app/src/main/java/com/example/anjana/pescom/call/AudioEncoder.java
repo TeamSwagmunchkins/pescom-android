@@ -24,7 +24,6 @@ public class AudioEncoder {
             mOutputStream.write(b1);
             // Log.d("PHILIP", "writing " + b2);
             mOutputStream.write(b2);
-            Log.d("Encoder", "" + b1 + "#" + b2);
         }
     }
 

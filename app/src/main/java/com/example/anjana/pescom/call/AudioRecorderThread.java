@@ -42,18 +42,18 @@ public class AudioRecorderThread extends Thread {
         final int encoding = AudioFormat.ENCODING_PCM_16BIT;
         final int bitRate = 8000;
         try {
-            int N = AudioRecord.getMinBufferSize(bitRate, AudioFormat.CHANNEL_IN_MONO,
+            final int bufferSize = AudioRecord.getMinBufferSize(bitRate, AudioFormat.CHANNEL_IN_MONO,
                     encoding);
-            Log.d("N", "" + N);
+            Log.d("bufferSize", "" + bufferSize);
             recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, bitRate,
-                    AudioFormat.CHANNEL_IN_MONO, encoding, N * 10);
+                    AudioFormat.CHANNEL_IN_MONO, encoding, bufferSize);
             mTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, bitRate,
-                    AudioFormat.CHANNEL_OUT_MONO, encoding, N * 10, AudioTrack.MODE_STREAM);
+                    AudioFormat.CHANNEL_OUT_MONO, encoding, bufferSize, AudioTrack.MODE_STREAM);
             recorder.startRecording();
             mTrack.play();
 
             final AudioEncoder encoder = new AudioEncoder(mOutputStream);
-            final AudioDecoder decoder = new AudioDecoder(mInputStream, N * 10);
+            final AudioDecoder decoder = new AudioDecoder(mInputStream, bufferSize);
             /*
              * Loops until something outside of this thread stops it.
              * Reads the data from the recorder and writes it to the audio track for playback.
@@ -79,7 +79,7 @@ public class AudioRecorderThread extends Thread {
                 int read = recorder.read(buffer, 0, buffer.length);
                 encoder.write(buffer, 0, read);
                 // encoder.flush();
-                // Log.d("N", "" + N);
+                // Log.d("bufferSize", "" + bufferSize);
                 // mOutputStream.write(buffer, 0, buffer.length);
             }
         } catch (Throwable x) {
