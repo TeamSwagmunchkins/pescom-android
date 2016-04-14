@@ -100,8 +100,15 @@ public class PushService extends Service {
                     mVoipNegThread.start();
                     // TODO: ensure socket is created before replying to server
                     return PduHelper.CODE_RESPONSE_ACK + ":" + negPort;
+                case PduHelper.CODE_PUSH_INCOMING_MSG:
+                    handlePendingMessages();
+                    return PduHelper.CODE_RESPONSE_ACK + ":";
             }
             return PduHelper.CODE_RESPONSE_UNRECOGNIZED + ":";
+        }
+
+        private void handlePendingMessages() {
+            // TODO: SOMZ
         }
     }
 

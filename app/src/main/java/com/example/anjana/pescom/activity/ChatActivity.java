@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
 import com.example.anjana.pescom.activity.adapter.MessageAdapter;
@@ -25,6 +26,8 @@ public class ChatActivity extends AppCompatActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_NUMBER = "name";
 
+    public static ChatActivity sChatActivity;
+
     private EditText messageET;
     private ListView messagesContainer;
     private Button sendBtn;
@@ -37,12 +40,18 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sChatActivity = this;
         setContentView(R.layout.activity_chat);
         mContactNumber = getIntent().getStringExtra(EXTRA_NAME);
         mContactNumber = getIntent().getStringExtra(EXTRA_NUMBER);
         getSupportActionBar().setTitle(mContactName);    //Set it to appropriate contact name
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Enable back button on Action bar
         initControls();
+    }
+
+    public void onMessagesPending() {
+        // TODO: SOMZ, this is if a message comes for this number WHEN the user is already in chat
+        // we need to display the message without
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 public class PduHelper {
 
     public static final int CODE_PUSH_INCOMING_CALL = 1;
+    public static final int CODE_PUSH_INCOMING_MSG = 3;
 
     public final static int CODE_VOIP_NEG_INCOMING = 1;
 

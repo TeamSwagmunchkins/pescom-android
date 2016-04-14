@@ -173,4 +173,31 @@ public class RequestHelper {
 
         return makeRequest(Constants.GET_USERS_EP, params, HTTP_METHOD.GET, context);
     }
+
+    public static RequestResult getPendingMessages(String number, String token, Context context)
+            throws IOException {
+        final String tokenKey = "token";
+        final String numberKey = "to_phone_number";
+
+        ContentValues params = new ContentValues();
+        params.put(tokenKey, token);
+        params.put(numberKey, number);
+
+        return makeRequest(Constants.GET_PENDING_MESSAGES_EP, params, HTTP_METHOD.POST, context);
+    }
+
+    public static RequestResult sendMessage(String ownNumber, String toNumber,
+                                            String token, Context context)
+            throws IOException {
+        final String tokenKey = "token";
+        final String toNumberKey = "to_phone_number";
+        final String fromNumberKey = "from_phone_number";
+
+        ContentValues params = new ContentValues();
+        params.put(tokenKey, token);
+        params.put(toNumberKey, toNumber);
+        params.put(fromNumberKey, ownNumber);
+
+        return makeRequest(Constants.SEND_MESSAGE_EP, params, HTTP_METHOD.POST, context);
+    }
 }
