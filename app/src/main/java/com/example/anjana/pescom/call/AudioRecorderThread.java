@@ -39,9 +39,9 @@ public class AudioRecorderThread extends Thread {
          * Initialize buffer to hold continuously recorded audio data, start recording, and start
          * playback.
          */
-        final int encoding = AudioFormat.ENCODING_PCM_16BIT;
-        final int bitRate = 8000;
         try {
+            final int encoding = AudioFormat.ENCODING_PCM_16BIT;
+            final int bitRate = 8000;
             final int bufferSize = AudioRecord.getMinBufferSize(bitRate, AudioFormat.CHANNEL_IN_MONO,
                     encoding);
             Log.d("bufferSize", "" + bufferSize);

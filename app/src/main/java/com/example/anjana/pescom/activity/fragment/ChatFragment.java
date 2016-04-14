@@ -1,6 +1,7 @@
-package com.example.anjana.pescom.activity;
+package com.example.anjana.pescom.activity.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -11,10 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
-import com.example.anjana.pescom.contacts.DummyContent;
-import com.example.anjana.pescom.contacts.DummyContent.phoneName;
+import com.example.anjana.pescom.activity.ChatActivity;
+import com.example.anjana.pescom.activity.adapter.ChatAdapter;
+import com.example.anjana.pescom.contacts.RegisteredContacts;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,26 +28,39 @@ import java.util.HashSet;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class CallFragment extends Fragment {
+public class ChatFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
-    public HashSet<phoneName> clist = new HashSet<phoneName>();
+
+    private OnListFragmentInteractionListener mListener
+            = new OnListFragmentInteractionListener() {
+        @Override
+        public void onListFragmentInteraction(RegisteredContacts.Contact item) {
+            Toast.makeText(getActivity(), "Opening chat: " + item.getNumber(), Toast.LENGTH_SHORT)
+                    .show();
+            Intent i = new Intent(getActivity(), ChatActivity.class);
+            i.putExtra(ChatActivity.EXTRA_NAME, item.getName());
+            i.putExtra(ChatActivity.EXTRA_NUMBER, item.getNumber());
+            startActivity(i);
+        }
+    };
+
+    public HashSet<RegisteredContacts.Contact> clist = new HashSet<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public CallFragment() {
+    public ChatFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static CallFragment newInstance(int columnCount) {
-        CallFragment fragment = new CallFragment();
+    public static ChatFragment newInstance(int columnCount) {
+        ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -64,7 +80,7 @@ public class CallFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_call, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
         //view.setOnI;
         // Set the adapter
 
@@ -89,20 +105,22 @@ public class CallFragment extends Fragment {
                             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
                     };
                     Cursor cursor = getContext().getContentResolver().query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, proj, null, null,
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            proj,
+                            null,
+                            null,
                             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
                     //Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                     while (cursor.moveToNext()) {
-                        name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
+                        name = cursor.getString(cursor.getColumnIndex(
+                                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                        phoneNumber = cursor.getString(cursor.getColumnIndex(
+                                ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
 
-                        System.out.println(name + "  " + phoneNumber);
                         if (phoneNumber != null)
-                            clist.add(new phoneName(name, phoneNumber));
+                            clist.add(new RegisteredContacts.Contact(name, phoneNumber));
                     }
-
                     cursor.close();
-
                 }
             });
             makeList.start();
@@ -112,27 +130,14 @@ public class CallFragment extends Fragment {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            ArrayList<phoneName> list1 = new ArrayList<phoneName>();
-            for (phoneName p : clist)
+            ArrayList<RegisteredContacts.Contact> list1 = new ArrayList<>();
+            for (RegisteredContacts.Contact p : clist)
                 list1.add(p);
-            DummyContent list = new DummyContent(list1);
-            recyclerView.setAdapter(new CallAdapter(DummyContent.ITEMS, mListener));
+            RegisteredContacts list = new RegisteredContacts(list1);
+            recyclerView.setAdapter(new ChatAdapter(list.ITEMS, mListener));
         }
 
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
     }
 
     @Override
@@ -152,8 +157,7 @@ public class CallFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyContent.phoneName item);
+        void onListFragmentInteraction(RegisteredContacts.Contact item);
     }
 }
 

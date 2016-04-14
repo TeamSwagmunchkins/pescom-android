@@ -12,10 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.anjana.pescom.R;
+import com.example.anjana.pescom.activity.fragment.CallFragment;
+import com.example.anjana.pescom.activity.fragment.ChatFragment;
 
-public class ContactsTabActivity extends AppCompatActivity
-        implements ChatFragment.OnListFragmentInteractionListener,
-        CallFragment.OnListFragmentInteractionListener {
+public class ContactsTabActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +38,6 @@ public class ContactsTabActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
 
 
-    }
-
-    @Override
-    public void onListFragmentInteraction(com.example.anjana.pescom.contacts.DummyContent.phoneName item) {
-        //you can leave it empty
     }
 
     @Override
@@ -77,9 +72,10 @@ public class ContactsTabActivity extends AppCompatActivity
                 case 1:
                     return new ChatFragment();
                 //break;
-                default:
+                case 0:
                     return new CallFragment();
             }
+            throw new IllegalArgumentException("No tab with position " + position);
         }
 
         @Override
@@ -95,7 +91,6 @@ public class ContactsTabActivity extends AppCompatActivity
                     return "CALL";
                 case 1:
                     return "CHAT";
-
             }
             return null;
         }

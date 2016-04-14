@@ -49,6 +49,7 @@ public class Preferences {
     }
 
     public String getUrl() {
-        return mSharedPreferences.getString(KEY_SERVER_URL, "http://192.168.5.100:8080/");
+        return mSharedPreferences.getString(KEY_SERVER_URL,
+                "https://agile-savannah-99226.herokuapp.com/");
     }
 }

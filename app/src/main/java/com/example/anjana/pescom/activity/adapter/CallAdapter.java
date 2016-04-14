@@ -1,4 +1,4 @@
-package com.example.anjana.pescom.activity;
+package com.example.anjana.pescom.activity.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,20 +7,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.anjana.pescom.R;
-import com.example.anjana.pescom.contacts.DummyContent.phoneName;
+import com.example.anjana.pescom.activity.fragment.CallFragment;
+import com.example.anjana.pescom.contacts.RegisteredContacts;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link com.example.anjana.pescom.contacts.DummyContent.phoneName} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link RegisteredContacts.Contact} and makes a call to the
  * TODO: Replace the implementation with code for your data type.
  */
 public class CallAdapter extends RecyclerView.Adapter<CallAdapter.ViewHolder> {
 
-    private final List<phoneName> mValues;
+    private final List<RegisteredContacts.Contact> mValues;
     private final CallFragment.OnListFragmentInteractionListener mListener;
 
-    public CallAdapter(List<phoneName> items, CallFragment.OnListFragmentInteractionListener listener) {
+    public CallAdapter(List<RegisteredContacts.Contact> items, CallFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -43,9 +44,6 @@ public class CallAdapter extends RecyclerView.Adapter<CallAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // this number should exist on the server already
-                    String number = holder.mItem.getNumber();
-                    
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
             }
@@ -61,7 +59,7 @@ public class CallAdapter extends RecyclerView.Adapter<CallAdapter.ViewHolder> {
         public final View mView;
         public final TextView mIdView;
         //public final TextView mContentView;
-        public phoneName mItem;
+        public RegisteredContacts.Contact mItem;
 
         public ViewHolder(View view) {
             super(view);

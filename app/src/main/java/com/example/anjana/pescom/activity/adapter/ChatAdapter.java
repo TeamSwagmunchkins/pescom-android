@@ -1,4 +1,4 @@
-package com.example.anjana.pescom.activity;
+package com.example.anjana.pescom.activity.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,20 +8,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
-import com.example.anjana.pescom.contacts.DummyContent.phoneName;
+import com.example.anjana.pescom.activity.fragment.ChatFragment;
+import com.example.anjana.pescom.contacts.RegisteredContacts;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link phoneName} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link RegisteredContacts.Contact} and makes a call to the
  * TODO: Replace the implementation with code for your data type.
  */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
-    private final List<phoneName> mValues;
+    private final List<RegisteredContacts.Contact> mValues;
     private final ChatFragment.OnListFragmentInteractionListener mListener;
 
-    public ChatAdapter(List<phoneName> items, ChatFragment.OnListFragmentInteractionListener listener) {
+    public ChatAdapter(List<RegisteredContacts.Contact> items, ChatFragment.OnListFragmentInteractionListener listener) {
 
         mValues = items;
         mListener = listener;
@@ -57,16 +58,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    /*String number=holder.mItem.getNumber();
-                    Toast.makeText(holder.mView.getContext(), "Number: "+number, Toast.LENGTH_SHORT).show();*/
-/*
-                    //create new fragment for personal chat
-                    PersonalChatFragment newFragment=new PersonalChatFragment();
-                    Bundle args=new Bundle();
-                    args.putString("Name", holder.mItem.getName());
-                    args.putString("Number", holder.mItem.getNumber());
-                    newFragment.setArguments(args);
-                    FragmentManager manager;*/
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
             }
@@ -82,7 +73,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         public final View mView;
         public final TextView mIdView;
         //public final TextView mContentView;
-        public phoneName mItem;
+        public RegisteredContacts.Contact mItem;
 
         public ViewHolder(View view) {
             super(view);

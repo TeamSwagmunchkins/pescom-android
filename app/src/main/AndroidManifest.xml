@@ -52,6 +52,11 @@
         <activity
             android:name=".activity.ContactsTabActivity"
             android:theme="@style/AppTheme.Dark"/>
+        <activity
+            android:name=".activity.ChatActivity"/>
+
+        <activity android:name=".activity.SettingsActivity">
+        </activity>
 
         <service
             android:name=".service.ServerRequestService"
@@ -73,9 +78,6 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
-
-        <activity android:name=".activity.SettingsActivity">
-        </activity>
     </application>
 
 </manifest>

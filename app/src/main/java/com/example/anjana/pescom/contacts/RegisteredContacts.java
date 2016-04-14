@@ -17,43 +17,38 @@ import java.util.Map;
  * <p/>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class DummyContent {
+public class RegisteredContacts {
 
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<phoneName> ITEMS = new ArrayList<phoneName>();
+    public final List<Contact> ITEMS = new ArrayList<>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static final Map<String, phoneName> ITEM_MAP = new HashMap<String, phoneName>();
+    public final Map<String, Contact> ITEM_MAP = new HashMap<>();
 
     //private static final int COUNT = 25;
 
-    static {
-        // Add some sample items.
-
-    }
-
-    public DummyContent(ArrayList<phoneName> clist)
+    public RegisteredContacts(ArrayList<Contact> clist)
     {
-        for(phoneName p:clist)
+        for(Contact p:clist)
         {
 
             if(p.number!=null && p.number.length()>=10) {
                     addItem(p);
             }
         }
-        Collections.sort(ITEMS, phoneName.NameComparator);
+        Collections.sort(ITEMS, Contact.NameComparator);
     }
 
-    private static void addItem(phoneName item) {
+    private void addItem(Contact item) {
         int i=0;
-        for(phoneName p:ITEMS)
+        for(Contact p:ITEMS)
         {
             i=0;
-            //clist.add(new phoneName(name, phoneNumber));
+            //clist.add(new Contact(name, phoneNumber));
 
             if (p.getName().equals(item.getName())&&p.getNumber().equals(item.getNumber())) {
                 i=1;break;
@@ -67,27 +62,25 @@ public class DummyContent {
         }
     }
 
-
-
     /**
      * A dummy item representing a piece of content.
      */
-    public static class phoneName implements Comparator<phoneName>
+    public static class Contact implements Comparator<Contact>
     {
-        String name;
-        String number;
-        //ImageView photo;
+        private final String name;
+        private final String number;
 
-        public phoneName(String name,String number)
+        public Contact(String name, String number)
         {
             this.name=name;
             this.number=number;
-            // this.photo=photo;
         }
+
         public String getName()
         {
             return name;
         }
+
         public String getNumber()
         {
             if (number.length() < 10) {
@@ -95,17 +88,15 @@ public class DummyContent {
             }
             return number.substring(number.length()-10);
         }
-        //public ImageView getPhoto(){return photo;}
 
-
-        public static Comparator<phoneName> NameComparator = new Comparator<phoneName>() {
-            public int compare(phoneName lhs, phoneName rhs) {
+        public static Comparator<Contact> NameComparator = new Comparator<Contact>() {
+            public int compare(Contact lhs, Contact rhs) {
                 return lhs.name.compareTo(rhs.name);
             }
         };
 
         @Override
-        public int compare(phoneName lhs, phoneName rhs) {
+        public int compare(Contact lhs, Contact rhs) {
 
             return lhs.name.compareTo(rhs.name);
         }
