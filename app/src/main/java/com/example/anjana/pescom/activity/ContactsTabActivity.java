@@ -1,6 +1,9 @@
 package com.example.anjana.pescom.activity;
 
+import android.app.ProgressDialog;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,14 +11,29 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.anjana.pescom.R;
 import com.example.anjana.pescom.activity.fragment.CallFragment;
 import com.example.anjana.pescom.activity.fragment.ChatFragment;
+import com.example.anjana.pescom.contacts.RegisteredContacts;
+import com.example.anjana.pescom.util.Preferences;
+import com.example.anjana.pescom.util.RequestHelper;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ContactsTabActivity extends AppCompatActivity {
+
+    final HashSet<RegisteredContacts.Contact> clist = new HashSet<>();
+    ArrayList<RegisteredContacts.Contact> list1 = new ArrayList<>();
+    Set<String> numbers = new HashSet<>();
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +86,22 @@ public class ContactsTabActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
+
+            Thread makeList= new TaskGetRegisteredContacts();
+
+            makeList.start();
+            try {
+                makeList.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             switch (position) {
                 case 1:
-                    return new ChatFragment();
+                    return new ChatFragment().newInstance(1, list1);
                 //break;
                 case 0:
-                    return new CallFragment();
+                    return new CallFragment().newInstance(1,list1);
             }
             throw new IllegalArgumentException("No tab with position " + position);
         }
@@ -95,7 +123,81 @@ public class ContactsTabActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+    private class TaskGetRegisteredContacts extends Thread {
+        @Override
+        public void run()
+        {
+            try {
+                Log.i("EventContact:", "INTASK");
+
+                Preferences preferences = Preferences.getPreferences(getParent());
+                String token = preferences.getToken();
+                RequestHelper.RequestResult response=RequestHelper.getRegisteredUsers(token,getApplicationContext());
+                JSONArray json = new JSONArray(response.RESPONSE_BODY);
+                for (int i = 0; i < json.length(); i++) {
+                    numbers.add(json.getJSONObject(i).getString("phone_number"));
+
+                }
+                preferences.setRegisteredNumbers(numbers);
+
+                setNumbers();
+
+            } catch (Exception E) {
+
+                E.printStackTrace();
+
+            }
+
+        }
+
+        private boolean checkNumber(String phoneNumber) {
+            phoneNumber = phoneNumber.substring(phoneNumber.length() - 10);
+            return numbers.contains(phoneNumber);
+        }
+
+
+        public void setNumbers()
+        {
+            String name, phoneNumber;
+            String[] proj = new String[]{
+                    ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+            };
+            Cursor cursor = getApplicationContext().getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    proj,
+                    null,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+            assert cursor != null;
+            while (cursor.moveToNext()) {
+                name = cursor.getString(cursor.getColumnIndex(
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                phoneNumber = cursor.getString(cursor.getColumnIndex(
+                        ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
+
+                if (phoneNumber != null && checkNumber(phoneNumber))
+                    clist.add(new RegisteredContacts.Contact(name, phoneNumber));
+            }
+            cursor.close();
+
+
+
+            for (RegisteredContacts.Contact p : clist) {
+                list1.add(p);
+
+            }
+
+        }
+
+    }
+
+
 }
+
+
 
 
 

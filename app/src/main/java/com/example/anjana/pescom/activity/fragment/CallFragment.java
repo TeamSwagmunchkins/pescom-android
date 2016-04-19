@@ -1,9 +1,7 @@
 package com.example.anjana.pescom.activity.fragment;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +16,6 @@ import com.example.anjana.pescom.activity.adapter.CallAdapter;
 import com.example.anjana.pescom.contacts.RegisteredContacts;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * A fragment representing a list of Items.
@@ -42,7 +39,8 @@ public class CallFragment extends Fragment {
         }
     };
 
-    public HashSet<RegisteredContacts.Contact> clist = new HashSet<>();
+
+    public ArrayList<RegisteredContacts.Contact> contactList = new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,11 +50,11 @@ public class CallFragment extends Fragment {
     }
 
     // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static CallFragment newInstance(int columnCount) {
+    public CallFragment newInstance(int columnCount,ArrayList<RegisteredContacts.Contact> clist) {
         CallFragment fragment = new CallFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
+        fragment.contactList=clist;
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,44 +85,8 @@ public class CallFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            Thread makeList = new Thread(new Runnable() {
-                @Override
-                public void run() {
 
-                    String name, phoneNumber;
-
-                    String[] proj = new String[]{
-                            ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER,
-                            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
-                    };
-                    Cursor cursor = getContext().getContentResolver().query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, proj, null, null,
-                            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                    //Cursor cursor = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-                    while (cursor.moveToNext()) {
-                        name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
-
-                        System.out.println(name + "  " + phoneNumber);
-                        if (phoneNumber != null)
-                            clist.add(new RegisteredContacts.Contact(name, phoneNumber));
-                    }
-
-                    cursor.close();
-
-                }
-            });
-            makeList.start();
-
-            try {
-                makeList.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            ArrayList<RegisteredContacts.Contact> list1 = new ArrayList<>();
-            for (RegisteredContacts.Contact p : clist)
-                list1.add(p);
-            RegisteredContacts list = new RegisteredContacts(list1);
+            RegisteredContacts list = new RegisteredContacts(contactList);
             recyclerView.setAdapter(new CallAdapter(list.ITEMS, mListener));
         }
 

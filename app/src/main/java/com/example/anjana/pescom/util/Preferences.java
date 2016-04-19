@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Set;
+
 public class Preferences {
 
     private static Preferences sPreferences;
@@ -19,6 +21,7 @@ public class Preferences {
     private final static String KEY_PH_NUMBER = "ph_number";
     private final static String KEY_SERVER_URL = "server_url";
     private final static String KEY_MESSAGES = "messages";
+    private final static String KEY_REGISTERED_NUMBERS = "registered_numbers";
 
     private Preferences(Context context) {
         mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -76,4 +79,13 @@ public class Preferences {
     private String getMessagesKey(String phno) {
         return KEY_MESSAGES + "/phno";
     }
+
+    public void setRegisteredNumbers(Set<String> numbers) {
+        mSharedPreferences.edit().putStringSet(KEY_REGISTERED_NUMBERS,numbers);
+    }
+
+    public Set<String> getRegisteredNumbers() {
+        return mSharedPreferences.getStringSet(KEY_REGISTERED_NUMBERS,null);
+    }
+
 }
