@@ -13,7 +13,7 @@ public class Preferences {
 
     private static Preferences sPreferences;
 
-    private final SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences;
 
     private final static String SHARED_PREF_NAME = "sharedPref";
 
@@ -23,7 +23,7 @@ public class Preferences {
     private final static String KEY_MESSAGES = "messages";
     private final static String KEY_REGISTERED_NUMBERS = "registered_numbers";
 
-    private Preferences(Context context) {
+    public Preferences(Context context) {
         mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         sPreferences = this;
     }
@@ -63,7 +63,10 @@ public class Preferences {
 
     public void addMessageFor(String phno, JSONObject jsonObject) {
         JSONArray existingMessages = getMessagesFor(phno);
+        if(existingMessages == null)
+            existingMessages = new JSONArray();
         existingMessages.put(jsonObject);
+        mSharedPreferences.edit().putString(getMessagesKey(phno), existingMessages.toString()).commit();
     }
 
     public JSONArray getMessagesFor(String phno) {
@@ -72,12 +75,12 @@ public class Preferences {
         } catch (JSONException e) {
             throw new IllegalArgumentException(
                     mSharedPreferences.getString(getMessagesKey(phno), "[]")
-                            + " is not valid JSON!");
+                            + " is not a valid JSON!");
         }
     }
 
     private String getMessagesKey(String phno) {
-        return KEY_MESSAGES + "/phno";
+        return KEY_MESSAGES + phno;
     }
 
     public void setRegisteredNumbers(Set<String> numbers) {

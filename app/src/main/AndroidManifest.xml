@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.example.anjana.pescom"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
     <application
         android:allowBackup="true"
@@ -53,7 +54,13 @@
             android:name=".activity.ContactsTabActivity"
             android:theme="@style/AppTheme.Dark"/>
         <activity
-            android:name=".activity.ChatActivity"/>
+            android:name=".activity.ChatActivity"
+            android:parentActivityName=".activity.ContactsTabActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ContactsTabActivity"
+                />
+        </activity>
 
         <activity android:name=".activity.SettingsActivity">
         </activity>

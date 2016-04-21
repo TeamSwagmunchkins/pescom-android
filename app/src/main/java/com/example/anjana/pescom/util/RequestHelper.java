@@ -74,6 +74,7 @@ public class RequestHelper {
                 Log.d(LOG_TAG, "Making request to: " + url.toString());
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setDoOutput(true);
 
                 // write out the parameters
@@ -187,16 +188,19 @@ public class RequestHelper {
     }
 
     public static RequestResult sendMessage(String ownNumber, String toNumber,
-                                            String token, Context context)
+                                            String token, String message, Context context)
             throws IOException {
         final String tokenKey = "token";
         final String toNumberKey = "to_phone_number";
         final String fromNumberKey = "from_phone_number";
+        final String messageKey = "message";
+
 
         ContentValues params = new ContentValues();
         params.put(tokenKey, token);
         params.put(toNumberKey, toNumber);
         params.put(fromNumberKey, ownNumber);
+        params.put(messageKey, message);
 
         return makeRequest(Constants.SEND_MESSAGE_EP, params, HTTP_METHOD.POST, context);
     }

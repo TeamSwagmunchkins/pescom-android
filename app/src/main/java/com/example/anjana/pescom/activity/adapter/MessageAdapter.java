@@ -83,7 +83,7 @@ public class MessageAdapter extends BaseAdapter {
         if (!isMe) {
             //Sender-side message alignment. Left Aligned
 
-            holder.contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+            holder.contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
             layoutParams.gravity = Gravity.LEFT;        // Left align chat bubble
@@ -104,7 +104,7 @@ public class MessageAdapter extends BaseAdapter {
         } else {
             //Receiver-side(My) message alignment. Right aligned
 
-            holder.contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+            holder.contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
             layoutParams.gravity = Gravity.RIGHT;       // Right align chat bubble
