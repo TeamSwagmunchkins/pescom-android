@@ -19,6 +19,7 @@ import java.net.Socket;
 
 public class CallMakerService extends IntentService {
 
+    private static AudioRecorderThread mRecorderThread;
     // actually connect to the call receiving socket, after user has accepted call
     private final static String ACTION_CALL = "call";
     // begin negotiation with a given IP and port
@@ -49,6 +50,12 @@ public class CallMakerService extends IntentService {
         context.startService(intent);
     }
 
+    public static void endCall(Context context) {
+        if (mRecorderThread != null) {
+            mRecorderThread.close();
+        }
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         //Log.d("PHILIP", "handling intent");
@@ -61,7 +68,7 @@ public class CallMakerService extends IntentService {
                         connection.connect(new InetSocketAddress(intent.getStringExtra(EXTRA_IP),
                                 intent.getIntExtra(EXTRA_PORT, -1)));
                         // we just want the connection to be successful so the other person gets
-                        // our ip and knows we're ready. That happened if we reaached here.
+                        // our ip and knows we're ready. That happened if we reached here.
                         connection.close();
                         //Log.d("PHILIP", "connected");
 
@@ -70,7 +77,8 @@ public class CallMakerService extends IntentService {
                         UdpInputStream is = new UdpInputStream("0.0.0.0",
                                 Constants.VOIP_UDP_SENDER_PORT);
 
-                        new AudioRecorderThread(os, is).run();
+                        mRecorderThread = new AudioRecorderThread(os, is);
+                        mRecorderThread.run();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

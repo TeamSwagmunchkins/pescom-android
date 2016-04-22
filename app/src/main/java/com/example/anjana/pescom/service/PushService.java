@@ -23,6 +23,7 @@ import com.example.anjana.pescom.activity.ChatActivity;
 import com.example.anjana.pescom.activity.ChatMessage;
 import com.example.anjana.pescom.activity.ContactsTabActivity;
 import com.example.anjana.pescom.activity.IncomingCallActivity;
+import com.example.anjana.pescom.activity.CallingActivity;
 import com.example.anjana.pescom.util.Constants;
 import com.example.anjana.pescom.util.PduHelper;
 import com.example.anjana.pescom.util.Preferences;
@@ -70,10 +71,11 @@ public class PushService extends Service {
 
     protected void startIncomingCallActivity(String ip, int port, String callerNumber) {
         Log.i("PHILIP", "Call incoming!");
-        Intent intent = new Intent(this, IncomingCallActivity.class);
-        intent.putExtra(IncomingCallActivity.EXTRA_IP, ip);
-        intent.putExtra(IncomingCallActivity.EXTRA_PORT, port);
-        intent.putExtra(IncomingCallActivity.EXTRA_CALLER_NUMBER, callerNumber);
+        Intent intent = new Intent(this, CallingActivity.class);
+        intent.setAction(CallingActivity.ACTION_INCOMING);
+        intent.putExtra(CallingActivity.EXTRA_IP, ip);
+        intent.putExtra(CallingActivity.EXTRA_PORT, port);
+        intent.putExtra(CallingActivity.EXTRA_NUMBER, callerNumber);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

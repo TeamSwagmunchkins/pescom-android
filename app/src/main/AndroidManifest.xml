@@ -18,6 +18,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Dark">
             <intent-filter>
@@ -28,10 +29,12 @@
         </activity>
         <activity
             android:name=".activity.OTPActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_otp"
             android:theme="@style/AppTheme.Dark"/>
         <activity
             android:name=".activity.VoipActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_voip"
             android:theme="@style/AppTheme.Dark"/>
         <!--
@@ -44,23 +47,21 @@
 
         <activity
             android:name=".activity.TestActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_test"
             android:theme="@style/AppTheme.Dark">
         </activity>
         <activity
-            android:name=".activity.IncomingCallActivity"
+            android:name=".activity.CallingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark"/>
         <activity
             android:name=".activity.ContactsTabActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark"/>
         <activity
             android:name=".activity.ChatActivity"
-            android:parentActivityName=".activity.ContactsTabActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ContactsTabActivity"
-                />
-        </activity>
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.SettingsActivity">
         </activity>

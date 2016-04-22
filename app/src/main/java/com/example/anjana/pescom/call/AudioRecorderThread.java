@@ -100,7 +100,7 @@ public class AudioRecorderThread extends Thread {
     /**
      * Called from outside of the thread in order to stop the recording/playback loop
      */
-    private void close() {
+    public void close() {
         stopped = true;
     }
 

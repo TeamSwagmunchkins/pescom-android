@@ -11,7 +11,8 @@
     tools:context=".activity.CallingActivity">
 
     <TextView
-        android:text="Incoming Call"
+        android:id="@+id/tv_title"
+        android:text="Dialling"
         android:layout_marginTop="20dp"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -29,16 +30,9 @@
         android:layout_centerInParent="true"/>
 
     <Button
-        android:onClick="onAcceptClick"
-        android:text="Accept"
-        android:layout_above="@+id/btn_decline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
         android:id="@+id/btn_decline"
         android:onClick="onDeclineClick"
-        android:text="Decline"
+        android:text="End Call"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

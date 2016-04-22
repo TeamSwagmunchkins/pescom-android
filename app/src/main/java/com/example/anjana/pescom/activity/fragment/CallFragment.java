@@ -1,6 +1,7 @@
 package com.example.anjana.pescom.activity.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.anjana.pescom.R;
+import com.example.anjana.pescom.activity.CallingActivity;
 import com.example.anjana.pescom.activity.adapter.CallAdapter;
 import com.example.anjana.pescom.contacts.RegisteredContacts;
 
@@ -36,6 +38,12 @@ public class CallFragment extends Fragment {
         public void onListFragmentInteraction(RegisteredContacts.Contact item) {
             String number = item.getNumber();
             Toast.makeText(getActivity(), "" + number, Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(getActivity(), CallingActivity.class);
+            i.setAction(CallingActivity.ACTION_DIAL);
+            i.putExtra(CallingActivity.EXTRA_NUMBER, number);
+
+            startActivity(i);
         }
     };
 
